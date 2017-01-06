@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>穿墙效果</title>
+    <style>
+        *{margin:0;padding: 0;}
+        .box{position: relative;overflow: hidden;
+            float: left; margin-left: 10px;;
+            width: 200px;height: 200px;border: 1px solid skyblue; border-radius: 4px;}
+        .mark{position: absolute;left: 200px;top: 0; background: skyblue;opacity: 0.6; width: 200px;height: 200px; }
+        .box1{background: url("img/1.jpg") no-repeat center}
+        .box2{background: url("img/2.jpg") no-repeat center}
+        .box3{background: url("img/3.jpg") no-repeat center}
+        section{margin:100px auto;width:900px;}
+    </style>
+</head>
+<body>
+<section>
+    <div class="box box1">
+        <div class="mark"></div>
+    </div>
+    <div class="box box2">
+        <div class="mark"></div>
+    </div>
+    <div class="box box3">
+        <div class="mark"></div>
+    </div>
+</section>
+<script src="../utils.js"></script>
+<script src="../move.js"></script>
+<script>
+    var aBox = document.getElementsByClassName('box');
+    for(var i=0;i<aBox.length;i++){
+        var oBox = aBox[i];
+        mark(oBox);
+    }
+    function mark(oBox){
+        var oMark =oBox.getElementsByClassName('mark')[0];
+        // 1 判断方向 2 进行位置调整
+        function from(e){
+            e=e||window.event;
+            // 利用Math.atan2 求出弧度 -》 转角度
+            var y= oBox.offsetTop+oBox.offsetHeight/2- e.clientY;
+            var x= oBox.offsetLeft+oBox.offsetWidth/2- e.clientX;
+            return Math.round( ((Math.atan2(y,x)*180/Math.PI)+180 )/90  )%4; // 0 1 2 3
+        }
+        oBox.onmouseover = function (e) {
+            e=e||window.event;
+            var oTo = e.relatedTarget|| e.fromElement;
+            if(oBox.contains(oTo)) return;
+
+            var showL=showT=null;
+            var fromP = from(e);
+
+
+            switch (fromP){
+                case 0:
+                    showL= 200;
+                    showT=0;
+                    break;
+                case 1:
+                    showL= 0;
+                    showT=200;
+                    break;
+                case 2:
+                    showL= -200;
+                    showT=0;
+                    break;
+                case 3:
+                    showL= 0;
+                    showT=-200;
+                    break;
+            }
+
+            utils.css(oMark,{ left:showL,top:showT });
+            animate({
+                id:oMark,
+                target:{
+                    left:0,
+                    top:0
+                }
+            })
+
+
+        }
+        oBox.onmouseout = function (e) {
+            e=e||window.event;
+            var oTo = e.relatedTarget|| e.toElement;
+            if(oBox.contains(oTo)) return;
+
+            var hideL=hideT=null;
+            var fromP = from(e);
+
+            switch (fromP){
+                case 0:
+                    hideL= 200;
+                    hideT=0;
+                    break;
+                case 1:
+                    hideL= 0;
+                    hideT=200;
+                    break;
+                case 2:
+                    hideL= -200;
+                    hideT=0;
+                    break;
+                case 3:
+                    hideL= 0;
+                    hideT=-200;
+                    break;
+            }
+
+            animate({
+                id:oMark,
+                target:{
+                    left:hideL,
+                    top:hideT
+                }
+            })
+
+
+        }
+    }
+
+
+</script>
+</body>
+</html>
